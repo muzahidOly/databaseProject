@@ -19,15 +19,18 @@
                 <th>Username</th>
 
                 <th>Password</th>
-                 <th>Role</th>
+            	
+            	
 
             </tr>
             <c:forEach var="user" items="${get_user}">
                 <tr style="text-align:center">
                     <td>"${user.email}" </td>
                     <td>"${user.password}"</td>
-                     <td>"${user.role}"</td>
+         
                  </tr>
+               
+  
             </c:forEach>
           </table>
 	</div>

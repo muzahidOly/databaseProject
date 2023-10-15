@@ -23,13 +23,16 @@
             <caption><h2>List of Users</h2></caption>
             <tr>
                 <th>Email</th>
-           <th>Password</th>
-     
+		          <th>Password</th>
+		   		<th>Role</th>
+            	
+            	
             </tr>
             <c:forEach var="users" items="${listUser}">
                 <tr style="text-align:center">
                     <td><c:out value="${users.email}" /></td>
                     <td><c:out value="${users.password}" /></td>
+                  <td><c:out value="${users.role}" /></td>
            
             </c:forEach>
         </table>

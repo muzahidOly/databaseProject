@@ -107,7 +107,16 @@ public class ControlServlet extends HttpServlet {
 	    	 }
 	    	 else if(userDAO.isValid(email, password)) 
 	    	 {
-			 	 
+			 	
+	    		  if ("client".equals(userDAO.getUserRole(email))) {
+	    	            currentUser = email;
+	    	            System.out.println("Login Successful! Redirecting to activitypage.jsp");
+	    	            request.getRequestDispatcher("activitypage.jsp").forward(request, response);
+	    	        } else if ("admin".equals(userDAO.getUserRole(email))) {
+	    	            currentUser = email;
+	    	            System.out.println("Login Successful! Redirecting to admin.jsp");
+	    	            request.getRequestDispatcher("admin.jsp").forward(request, response);
+	    	        }
 			 	 currentUser = email;
 				 System.out.println("Login Successful! Redirecting");
 				 request.getRequestDispatcher("activitypage.jsp").forward(request, response);
@@ -123,13 +132,12 @@ public class ControlServlet extends HttpServlet {
 	    	String email = request.getParameter("email");
 	   	 	
 	   	 	String password = request.getParameter("password");
-	   	    	 	
 	   	 	String confirm = request.getParameter("confirmation");
-	   	 String role = request.getParameter("role");
+	   	 	String role = request.getParameter("role");
 	   	 	if (password.equals(confirm)) {
 	   	 		if (!userDAO.checkEmail(email)) {
 		   	 		System.out.println("Registration Successful! Added to database");
-		            user users = new user(email,password);
+		            user users = new user(email,password,role);
 		   	 		userDAO.insert(users);
 		   	 		response.sendRedirect("login.jsp");
 	   	 		}

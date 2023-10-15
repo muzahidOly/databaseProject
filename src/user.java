@@ -11,19 +11,27 @@ public class user
 	    public user(String email) 
 	    {
 	        this.email = email;
+	        this.password = "pass1234";
+	
 	    }
+	    
+
 	    
 	    public user(String email, String password) 
 	    {
 	    	this.password= password;
 	    	this.email = email;
+	    	this.role ="";
+
 	    }
-	    public user(String email, String password, String role) 
+	    public user(String email, String password,String role) 
 	    {
 	    	this.password= password;
 	    	this.email = email;
 	    	this.role =role;
+
 	    }
+
 	    
 	   //getter and setter methods
 	    public String getEmail() {

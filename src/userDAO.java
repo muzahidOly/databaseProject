@@ -90,10 +90,10 @@ public class userDAO
             String email = resultSet.getString("email");
          
             String password = resultSet.getString("password");
-           
+            String role = resultSet.getString("role");
 
              
-            user users = new user(email, password);
+            user users = new user(email, password,role);
             listUser.add(users);
         }        
         resultSet.close();
@@ -109,10 +109,11 @@ public class userDAO
     
     public void insert(user users) throws SQLException {
     	connect_func("root","pass1234");         
-		String sql = "insert into User(email,password) values (?, ?)";
+		String sql = "insert into User(email,password, role) values (?, ?, ?)";
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
 		preparedStatement.setString(1, users.getEmail());
 		preparedStatement.setString(2, users.getPassword());
+		preparedStatement.setString(3, users.getRole());
 		preparedStatement.executeUpdate();
         preparedStatement.close();
     }
@@ -136,7 +137,7 @@ public class userDAO
         preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
         preparedStatement.setString(1, users.getEmail());
 		preparedStatement.setString(2, users.getPassword());
-         
+		preparedStatement.setString(3, users.getRole());
         boolean rowUpdated = preparedStatement.executeUpdate() > 0;
         preparedStatement.close();
         return rowUpdated;     
@@ -156,7 +157,7 @@ public class userDAO
         if (resultSet.next()) {
       
             String password = resultSet.getString("password");
-            
+
             user = new user(email, password);
         }
          
@@ -202,7 +203,28 @@ public class userDAO
        	return checks;
     }
     
-    
+    public String getUserRole(String email) throws SQLException {
+        String role = null;
+        String sql = "SELECT role FROM User WHERE email = ?"; // Query to retrieve the role based on email
+        connect_func();
+
+        try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+            preparedStatement.setString(1, email);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                role = resultSet.getString("role");
+            }
+        } catch (SQLException e) {
+            // Handle any database-related exceptions here
+            e.printStackTrace();
+        } finally {
+            disconnect();
+        }
+
+        return role;
+    }
     
     public boolean isValid(String email, String password) throws SQLException
     {
@@ -232,28 +254,33 @@ public class userDAO
         statement =  (Statement) connect.createStatement();
         
         String[] INITIAL = {"drop database if exists testdb; ",
-					        "create database testdb; ",
-					        "use testdb; ",
-					        "drop table if exists User; ",
-					        ("CREATE TABLE if not exists User( " +
-					            "email VARCHAR(50) NOT NULL, " + 
-					            "password VARCHAR(20) NOT NULL, " +
-					            "PRIMARY KEY (email) "+"); ")
-        					};
-        String[] TUPLES = {("insert into User(email, password)"+
-        			"values ('susie@gmail.com', '1234'),"+
-			    		 	"('don@gmail.com', 'don123'),"+
-			    	 	 	"('margarita@gmail.com','margarita1234'),"+
-			    		 	"('jo@gmail.com','jo1234'),"+
-			    		 	"('wallace@gmail.com','wallace1234'),"+
-			    		 	"('amelia@gmail.com','amelia1234'),"+
-			    			"('sophie@gmail.com','sophie1234'),"+
-			    			"('angelo@gmail.com','angelo1234'),"+
-			    			"('rudy@gmail.com','rudy1234'),"+
-			    			"('jeannette@gmail.com', 'jeannette1234'),"+
-			    			"('root', 'pass1234');")
-			    			};
-        
+		        "create database testdb; ",
+		        "use testdb; ",
+		        "drop table if exists User; ",
+		        ("CREATE TABLE if not exists User( " +
+		            "email VARCHAR(50) NOT NULL, " + 
+		            "password VARCHAR(20) NOT NULL, " +
+		            "role VARCHAR(20) NOT NULL, " +
+		            "PRIMARY KEY (email) "+"); ")
+				};
+
+        String[] TUPLES = {
+        	    "insert into User(email, password, role) values ('susie@gmail.com', 'susie1234', 'client');",
+        	    "insert into User(email, password, role) values ('don@gmail.com', 'don123', 'client');",
+        	    "insert into User(email, password, role) values ('margarita@gmail.com', 'margarita1234', 'client');",
+        	    "insert into User(email, password, role) values ('jo@gmail.com', 'jo1234', 'client');",
+        	    "insert into User(email, password, role) values ('wallace@gmail.com', 'wallace1234', 'client');",
+        	    "insert into User(email, password, role) values ('amelia@gmail.com', 'amelia1234', 'client');",
+        	    "insert into User(email, password, role) values ('sophie@gmail.com', 'sophie1234', 'client');",
+        	    "insert into User(email, password, role) values ('angelo@gmail.com', 'angelo1234', 'client');",
+        	    "insert into User(email, password, role) values ('ruddy@gmail.com', 'rudy1234', 'client');",
+        	    "insert into User(email, password, role) values ('jeannette@gmail.com', 'jeannette1234', 'client');",
+        	    "insert into User(email, password, role) values ('root', 'pass1234', 'admin');"
+        	};
+
+
+
+
         //for loop to put these in database
         for (int i = 0; i < INITIAL.length; i++)
         	statement.execute(INITIAL[i]);

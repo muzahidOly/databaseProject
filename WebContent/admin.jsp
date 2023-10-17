@@ -9,13 +9,13 @@
 <title>Client page</title>
 </head>
 
-<center><h1>Welcome Client! You have been successfully logged in</h1> </center>
+<center><h1>Welcome Admin! You have been successfully logged in</h1> </center>
 
  
 	<body>
 	 <center>
 		 <a href="login.jsp"target ="_self" > logout</a><br><br> 
-		 <p> We will impliment other client activities here later</p>
+		 <p> We will impliment other admin activities here later</p>
 		 </center>
 	</body>
 </html>

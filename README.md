@@ -12,12 +12,17 @@ Mizanul Haque-Mizanul also worked on implementing the interface, primarily with 
 
 We spent roughly 4-5hrs on implementing the first part of the project.
 
+Muzahid Oly- Muzahid worked on implmenting the quote response, the david smith activity page, as well the other functions
+Mizanul Haque- Mizanul worked on implmenting the table strucutre in the database, as well as the activity page for the clients.
+We spent 30 hr on the second part of the project
+Mizanul Haque aspent 8-9 hours indiviudally
+Muzahid spent 10-12 hours individually
 
 
 
 
 
-## Instructions to Opereate
+## Instructions to Operate
 
 Install my-project with npm
 

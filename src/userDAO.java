@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 //import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 /**
  * Servlet implementation class Connect
@@ -100,6 +101,32 @@ public class userDAO
         disconnect();        
         return listUser;
     }
+    public List<quote> listAllQuotes() throws SQLException {
+        List<quote> listQuotes = new ArrayList<quote>();        
+        String sql = "SELECT * FROM User";       
+        connect_func();      
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+         
+        while (resultSet.next()) {
+            if (resultSet.getString("quote_date")!=null)
+        	{String email = resultSet.getString("email");
+            
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            quote quotes = new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response);
+            listQuotes.add(quotes);
+        }
+        }        
+        resultSet.close();
+        disconnect();        
+        return listQuotes;
+    }
+
     
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {
@@ -116,6 +143,27 @@ public class userDAO
 		preparedStatement.setString(3, users.getRole());
 		preparedStatement.executeUpdate();
         preparedStatement.close();
+    }
+    
+    public void updateQuote(String email, String treePrice, String treeSize, String treeHeight, Date quoteDate, String quoteResponse) throws SQLException {
+        connect_func();
+
+        String sql = "UPDATE User " +
+                     "SET tree_price = ?, tree_size = ?, tree_height = ?, quote_date = ?, quote_response = ? " +
+                     "WHERE email = ?";
+
+        preparedStatement = connect.prepareStatement(sql);
+        preparedStatement.setString(1, treePrice);
+        preparedStatement.setString(2, treeSize);
+        preparedStatement.setString(3, treeHeight);
+        preparedStatement.setDate(4, new java.sql.Date(quoteDate.getTime()));
+        preparedStatement.setString(5, quoteResponse);
+        preparedStatement.setString(6, email);
+        
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        
+        System.out.println("UPDATING NEW QUOTE");
     }
     
     public boolean delete(String email) throws SQLException {
@@ -253,31 +301,37 @@ public class userDAO
     	connect_func();
         statement =  (Statement) connect.createStatement();
         
-        String[] INITIAL = {"drop database if exists testdb; ",
-		        "create database testdb; ",
-		        "use testdb; ",
-		        "drop table if exists User; ",
-		        ("CREATE TABLE if not exists User( " +
-		            "email VARCHAR(50) NOT NULL, " + 
-		            "password VARCHAR(20) NOT NULL, " +
-		            "role VARCHAR(20) NOT NULL, " +
-		            "PRIMARY KEY (email) "+"); ")
-				};
-
-        String[] TUPLES = {
-        	    "insert into User(email, password, role) values ('susie@gmail.com', 'susie1234', 'client');",
-        	    "insert into User(email, password, role) values ('don@gmail.com', 'don123', 'client');",
-        	    "insert into User(email, password, role) values ('margarita@gmail.com', 'margarita1234', 'client');",
-        	    "insert into User(email, password, role) values ('jo@gmail.com', 'jo1234', 'client');",
-        	    "insert into User(email, password, role) values ('wallace@gmail.com', 'wallace1234', 'client');",
-        	    "insert into User(email, password, role) values ('amelia@gmail.com', 'amelia1234', 'client');",
-        	    "insert into User(email, password, role) values ('sophie@gmail.com', 'sophie1234', 'client');",
-        	    "insert into User(email, password, role) values ('angelo@gmail.com', 'angelo1234', 'client');",
-        	    "insert into User(email, password, role) values ('ruddy@gmail.com', 'rudy1234', 'client');",
-        	    "insert into User(email, password, role) values ('jeannette@gmail.com', 'jeannette1234', 'client');",
-        	    "insert into User(email, password, role) values ('root', 'pass1234', 'admin');"
+        String[] INITIAL = {
+        	    
+        		"use testdb;",
+        		"drop table if exists User;",
+        	    ("CREATE TABLE if not exists User( " +
+        	        "email VARCHAR(50) NOT NULL, " +
+        	        "password VARCHAR(20) NOT NULL, " +
+        	        "role VARCHAR(20) NOT NULL, " +
+        	        "tree_price VARCHAR(20), " + // New column
+        	        "tree_size VARCHAR(20), " +  // New column
+        	        "tree_height VARCHAR(20), " + // New column
+        	        "quote_date DATE, " + // New column
+        	        "quote_response VARCHAR(20), " + // New column
+        	        "PRIMARY KEY (email) " + 
+        	    "); ")
         	};
-
+        
+        
+        String[] TUPLES = {
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('susie@gmail.com', 'susie1234', 'client', '10', '3', '4', '2021-06-14', 'pending');",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('don@gmail.com', 'don123', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('margarita@gmail.com', 'margarita1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('jo@gmail.com', 'jo1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('wallace@gmail.com', 'wallace1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('amelia@gmail.com', 'amelia1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('sophie@gmail.com', 'sophie1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('angelo@gmail.com', 'angelo1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('ruddy@gmail.com', 'rudy1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('jeannette@gmail.com', 'jeannette1234', 'client', null, null, null, null, null);",
+        	    "insert into User(email, password, role, tree_price, tree_size, tree_height, quote_date, quote_response) values ('root', 'pass1234', 'admin', null, null, null, null, null);"
+        	};
 
 
 
@@ -286,17 +340,158 @@ public class userDAO
         	statement.execute(INITIAL[i]);
         for (int i = 0; i < TUPLES.length; i++)	
         	statement.execute(TUPLES[i]);
+    
         disconnect();
     }
     
     
    
+    public void printTable() {
+    	 try {
+             Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&user=john&password=Muzahidisme1!");
+             Statement statement = connection.createStatement();
+             
+             // Execute a SELECT query to retrieve data from the User table
+             String selectQuery = "SELECT * FROM User";
+             ResultSet resultSet = statement.executeQuery(selectQuery);
+             
+             // Print the data
+             while (resultSet.next()) {
+                 String email = resultSet.getString("email");
+                 String password = resultSet.getString("password");
+                 String role = resultSet.getString("role");
+                 String treePrice = resultSet.getString("tree_price");
+                 String treeSize = resultSet.getString("tree_size");
+                 String treeHeight = resultSet.getString("tree_height");
+                 Date quoteDate = resultSet.getDate("quote_date");
+                 String quoteResponse = resultSet.getString("quote_response");
+                 
+                 System.out.println("Email: " + email);
+                 System.out.println("Password: " + password);
+                 System.out.println("Role: " + role);
+                 System.out.println("Tree Price: " + treePrice);
+                 System.out.println("Tree Size: " + treeSize);
+                 System.out.println("Tree Height: " + treeHeight);
+                 System.out.println("Quote Date: " + quoteDate);
+                 System.out.println("Quote Response: " + quoteResponse);
+                 System.out.println();
+             }
+             
+             // Close resources
+             resultSet.close();
+             statement.close();
+             connection.close();
+         } catch (SQLException e) {
+             e.printStackTrace();
+         }
+    }
     
     
-    
-    
+    public void printQuotes(List<quote> quotes) {
+        for (quote q : quotes) {
+            System.out.println("Email: " + q.getEmail());
+            System.out.println("Tree Price: " + q.getTreePrice());
+            System.out.println("Tree Size: " + q.getTreeSize());
+            System.out.println("Tree Height: " + q.getTreeHeight());
+            System.out.println("Quote Date: " + q.getQuoteDate());
+            System.out.println("Quote Response: " + q.getQuoteResponse());
+            System.out.println(); // Add a separator between quotes
+        }
+    }
     
 	
-	
+	public quote quoteInfo(String user) {
+		
+		
+		quote quoteInfo = null;
 
+	    try {
+	        connect_func(); // Establish your database connection
+
+	        String sql = "SELECT email, tree_price, tree_size, tree_height, quote_date, quote_response FROM User WHERE email = ? AND quote_date IS NOT NULL";
+	        PreparedStatement preparedStatement = connect.prepareStatement(sql);
+	        preparedStatement.setString(1, user);
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        if (resultSet.next()) {
+	            String email = resultSet.getString("email");
+	            String treePrice = resultSet.getString("tree_price");
+	            String treeSize = resultSet.getString("tree_size");
+	            String treeHeight = resultSet.getString("tree_height");
+	            Date quoteDate = resultSet.getDate("quote_date");
+	            String quoteResponse = resultSet.getString("quote_response");
+
+	            quoteInfo = new quote(email, treePrice, treeSize, treeHeight, quoteDate, quoteResponse);
+	        }
+
+	        // Close resources
+	        resultSet.close();
+	        preparedStatement.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        // Close the database connection here
+	    }
+
+	    return quoteInfo;
+		
+	}
+
+	
+	public void updateQuoteFromFrontend(String user, String newInfo, int position)  throws SQLException {
+		 connect_func();
+
+//         String sql = "UPDATE User " +
+//                      "SET tree_price = ?, tree_size = ?, tree_height = ?, quote_date = ?, quote_response = ? " +
+//                      "WHERE email = ?";
+
+        // preparedStatement = connect.prepareStatement(sql);
+     
+        
+         
+         switch (position) {
+         case 1:
+        	 String sql = "UPDATE User " +
+                      "SET tree_price = ?" + "WHERE email = ?";
+        	 preparedStatement = connect.prepareStatement(sql);
+        	 preparedStatement.setString(1, newInfo);
+        	 preparedStatement.setString(2, user);
+        	 preparedStatement.executeUpdate();
+             preparedStatement.close();
+         case 2:
+        	 String sql2 = "UPDATE User " +
+                      "SET tree_size = ?" + "WHERE email = ?";
+        	 preparedStatement = connect.prepareStatement(sql2);
+        	 preparedStatement.setString(1, newInfo);
+        	 preparedStatement.setString(2, user);
+        	 preparedStatement.executeUpdate();
+             preparedStatement.close();
+         case 3:
+        	 String sql3 = "UPDATE User " +
+                      "SET tree_height = ?" + "WHERE email = ?";
+        	 preparedStatement = connect.prepareStatement(sql3);
+        	 preparedStatement.setString(1, newInfo);
+        	 preparedStatement.setString(2, user);
+        	 preparedStatement.executeUpdate();
+             preparedStatement.close();
+         case 4:
+        	 String sql4 = "UPDATE User " +
+                      "SET quote_date = ?" + "WHERE email = ?";
+        	 preparedStatement = connect.prepareStatement(sql4);
+        	 preparedStatement.setString(1, "5203-45-20");
+        	 preparedStatement.setString(2, user);
+        	 preparedStatement.executeUpdate();
+             preparedStatement.close();
+         case 5:
+        	 String sql5 = "UPDATE User " +
+                      "SET quote_response = ?" + "WHERE email = ?";
+        	 preparedStatement = connect.prepareStatement(sql5);
+        	 preparedStatement.setString(1, newInfo);
+        	 preparedStatement.setString(2, user);
+        	 preparedStatement.executeUpdate();
+             preparedStatement.close();
+         
+         }
+         System.out.println("UPDATING NEW QUOTE");
+	}
 }

@@ -13,6 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.sql.PreparedStatement;
 //import java.sql.Connection;
 //import java.sql.PreparedStatement;
@@ -46,7 +51,7 @@ public class userDAO
             } catch (ClassNotFoundException e) {
                 throw new SQLException(e);
             }
-            connect = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&user=john&password=Pass12342");
+            connect = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&user=john&password=Muzahidisme1!");
             System.out.println(connect);
         }
     }
@@ -297,6 +302,435 @@ public class userDAO
     }
     
     
+    public List<quote> prospective() throws ServletException, IOException, SQLException {
+        List<quote> prospectiveClients = new ArrayList<>();
+        System.out.println("Looking for Biggest Client");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            // Check if quote_response is "no", "No", or "NO", or if it's null
+            if (quote_response != null && quote_response.equalsIgnoreCase("no")) {
+                // Create a new quote object and add it to the list
+                quote userQuote = new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response);
+                prospectiveClients.add(userQuote);
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return prospectiveClients;
+    }
+    
+    public List<quote> easyClients() throws ServletException, IOException, SQLException {
+        List<quote> easyClientstUsers = new ArrayList<>();
+        System.out.println("Looking for Biggest Client");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            // Check if quote_response is "no", "No", or "NO", or if it's null
+            if (quote_response != null && (quote_response.equalsIgnoreCase("accept")|| quote_response.equalsIgnoreCase("accepted"))) {
+                // Create a new quote object and add it to the list
+                quote userQuote = new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response);
+                easyClientstUsers.add(userQuote);
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return easyClientstUsers;
+    }
+
+    
+    public List<quote> bigClients() throws ServletException, IOException, SQLException {
+        List<quote> bigClientUsers = new ArrayList<>();
+        System.out.println("Looking for Biggest Client");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        double maxTreeHeight = Double.MIN_VALUE;
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            if (tree_height != null) {
+                // Remove spaces from tree_height
+                tree_height = tree_height.replaceAll("\\s", "");
+
+                try {
+                    // Convert tree_height to double for comparison
+                    double currentTreeHeight = Double.parseDouble(tree_height);
+
+                    if (currentTreeHeight > maxTreeHeight) {
+                        // Reset the list if a taller tree is found
+                        maxTreeHeight = currentTreeHeight;
+                        bigClientUsers = new ArrayList<>();
+                    }
+
+                    if (currentTreeHeight == maxTreeHeight) {
+                        // Add the current user to the list if their tree height is equal to the max
+                        bigClientUsers.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+                    }
+                } catch (NumberFormatException e) {
+                    // Handle the case where tree_height cannot be parsed as a double
+                    System.err.println("Error parsing tree_height as double: " + tree_height);
+                }
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return bigClientUsers;
+    }
+    
+    public List<quote> oneTree() throws ServletException, IOException, SQLException {
+        List<quote> oneTreeClients = new ArrayList<>();
+        System.out.println("Looking for One Tree Client");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            if (tree_height != null && tree_height.equals("1")) {
+                // Add the client to the list if their tree_height is 1
+                oneTreeClients.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return oneTreeClients;
+    }
+
+
+    public List<quote> highestTreeCut() throws ServletException, IOException, SQLException {
+        List<quote> highestTreeCutUser = new ArrayList<>();
+        System.out.println("Looking for Highest Client");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        double maxTreeSize = Double.MIN_VALUE;
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            if (tree_size != null) {
+                // Remove spaces from tree_height
+            	tree_size = tree_size.replaceAll("\\s", "");
+
+                try {
+                    // Convert tree_height to double for comparison
+                    double currentTreeHeight = Double.parseDouble(tree_size);
+
+                    if (currentTreeHeight > maxTreeSize) {
+                        // Reset the list if a taller tree is found
+                    	maxTreeSize = currentTreeHeight;
+                        highestTreeCutUser = new ArrayList<>();
+                    }
+
+                    if (currentTreeHeight == maxTreeSize) {
+                        // Add the current user to the list if their tree height is equal to the max
+                    	highestTreeCutUser.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+                    }
+                } catch (NumberFormatException e) {
+                    // Handle the case where tree_height cannot be parsed as a double
+                    System.err.println("Error parsing tree_size as double: " + tree_size);
+                }
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return highestTreeCutUser;
+    }
+    
+    
+    public List<quote> goodClients() throws ServletException, IOException, SQLException {
+        List<quote> goodClientsList = new ArrayList<>();
+        System.out.println("Looking for Clients with Future Quote Dates");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        // Get the current date and time
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+
+            if (quote_date != null) {
+                // Convert quote_date to LocalDateTime
+                LocalDateTime localQuoteDateTime = quote_date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+                // Check if the quote_date is after 48 hours from the current date and time
+                boolean isAfter = localQuoteDateTime.isAfter(currentDateTime.plusHours(48));
+
+                if (isAfter) {
+                    // Add the client to the list if quote_date is after 48 hours from the current date
+                    goodClientsList.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+                }
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return goodClientsList;
+    }
+
+    
+    public List<quote> overdueClients() throws ServletException, IOException, SQLException {
+        List<quote> overdueClients = new ArrayList<>();
+        System.out.println("Looking for Clients with Overdue fee");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        // Get the current date
+        LocalDate currentDate = LocalDate.now();
+
+        // Convert LocalDate to LocalDateTime by combining it with midnight time
+        LocalDateTime currentDateTime = LocalDateTime.of(currentDate, LocalTime.MIDNIGHT);
+
+        // Subtract 49 hours from the current date and time
+        LocalDateTime resultDateTime = currentDateTime.minusHours(178);
+
+        // Now, if needed, you can extract the resulting LocalDate
+        LocalDate resultDate = resultDateTime.toLocalDate();
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+            
+            if (quote_date != null) {
+       
+                  // Define the desired date format
+                  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                  // Parse the given date string "2021-06-14" into a LocalDate
+                  LocalDate specificDate = LocalDate.parse(quote_date.toString(), formatter);
+                  // Check if the specific date is before the current date
+                  boolean isBefore = specificDate.isBefore(resultDate);
+                 if (isBefore) {
+                     // Add the client to the list if quote_date is past the current date
+                	 overdueClients.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+                 }
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return overdueClients;
+    }
+    
+    
+    public List<quote> badClients() throws ServletException, IOException, SQLException {
+        List<quote> badClientsList = new ArrayList<>();
+        System.out.println("Looking for Clients with Past Quote Dates");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        // Get the current date
+        LocalDate currentDate = LocalDate.now();
+
+        // Convert LocalDate to LocalDateTime by combining it with midnight time
+        LocalDateTime currentDateTime = LocalDateTime.of(currentDate, LocalTime.MIDNIGHT);
+
+        // Subtract 49 hours from the current date and time
+        LocalDateTime resultDateTime = currentDateTime.minusHours(49);
+
+        // Now, if needed, you can extract the resulting LocalDate
+        LocalDate resultDate = resultDateTime.toLocalDate();
+
+        while (resultSet.next()) {
+            String email = resultSet.getString("email");
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+            Date quote_date = resultSet.getDate("quote_date");
+            String quote_response = resultSet.getString("quote_response");
+            
+            if (quote_date != null) {
+       
+                  // Define the desired date format
+                  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                  // Parse the given date string "2021-06-14" into a LocalDate
+                  LocalDate specificDate = LocalDate.parse(quote_date.toString(), formatter);
+                  // Check if the specific date is before the current date
+                  boolean isBefore = specificDate.isBefore(resultDate);
+                 if (isBefore) {
+                     // Add the client to the list if quote_date is past the current date
+                     badClientsList.add(new quote(email, tree_price, tree_size, tree_height, quote_date, quote_response));
+                 }
+            }
+        }
+
+        resultSet.close();
+        disconnect();
+        return badClientsList;
+    }
+
+    public int[] totalStatistics() throws ServletException, IOException, SQLException {
+        int[] results = new int[3];
+        System.out.println("Calculating Statistics");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            // Retrieve values from the current record
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+
+            // Attempt to parse non-null values to integers
+            if (tree_price != null && tree_size != null && tree_height != null) {
+                try {
+                    int priceValue = Integer.parseInt(tree_price);
+                    int sizeValue = Integer.parseInt(tree_size);
+                    int heightValue = Integer.parseInt(tree_height);
+
+                    // Accumulate values in the results array
+                    results[0] += priceValue;
+                    results[1] += sizeValue;
+                    results[2] += heightValue;
+                } catch (NumberFormatException e) {
+                    // Handle the case where parsing fails (e.g., value is not an integer)
+                    // You can log a message or ignore the quote and move on to the next
+                    System.err.println("Skipping quote due to parsing error: " + e.getMessage());
+                }
+            }
+        }
+
+        System.out.println(results[0]+" "+results[1]+" "+results[2]);
+        resultSet.close();
+        disconnect();
+        return results;
+    }
+    public double[] averageStatistics() throws ServletException, IOException, SQLException {
+        int[] results = new int[3];
+        int[] counts = new int[3];
+        
+        System.out.println("Calculating Statistics");
+
+        String sql = "SELECT * FROM User";
+        connect_func();
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            // Retrieve values from the current record
+            String tree_price = resultSet.getString("tree_price");
+            String tree_size = resultSet.getString("tree_size");
+            String tree_height = resultSet.getString("tree_height");
+
+            // Attempt to parse non-null values to integers
+            if (tree_price != null && tree_size != null && tree_height != null) {
+                try {
+                    int priceValue = Integer.parseInt(tree_price);
+                    int sizeValue = Integer.parseInt(tree_size);
+                    int heightValue = Integer.parseInt(tree_height);
+
+                    // Accumulate values and counts in the respective arrays
+                    results[0] += priceValue;
+                    results[1] += sizeValue;
+                    results[2] += heightValue;
+
+                    counts[0]++;
+                    counts[1]++;
+                    counts[2]++;
+                } catch (NumberFormatException e) {
+                    // Handle the case where parsing fails (e.g., value is not an integer)
+                    // You can log a message or ignore the quote and move on to the next
+                    System.err.println("Skipping quote due to parsing error: " + e.getMessage());
+                }
+            }
+        }
+
+        System.out.println(results[0] + " " + results[1] + " " + results[2]);
+
+        // Calculate averages
+        double[] averages = new double[3];
+        for (int i = 0; i < averages.length; i++) {
+            if (counts[i] > 0) {
+                averages[i] = (double) results[i] / counts[i];
+            }
+        }
+
+        System.out.println(averages[0] + " " + averages[1] + " " + averages[2]);
+
+        resultSet.close();
+        disconnect();
+        return averages;
+    }
+
+
+
+
     public void init() throws SQLException, FileNotFoundException, IOException{
     	connect_func();
         statement =  (Statement) connect.createStatement();

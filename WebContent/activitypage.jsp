@@ -24,7 +24,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+        
             margin: 0;
             padding: 0;
             text-align: center;
@@ -83,7 +83,7 @@
                     <th>Email</th>
                     <th>Tree Price</th>
                     <th>Tree Size</th>
-                    <th>Tree Height</th>
+                    <th>Tree Number</th>
                     <th>Quote Date</th>
                     <th>Quote Response</th>
                 </tr>
@@ -111,7 +111,7 @@
             <label for="treeSize">Tree Size:</label>
             <input type="text" name="treeSize" id="treeSize" required>
             
-            <label for="treeHeight">Tree Height:</label>
+            <label for="treeHeight">Tree Number:</label>
             <input type="text" name="treeHeight" id="treeHeight" required>
             
             <label for="quoteDate">Quote Date:</label>

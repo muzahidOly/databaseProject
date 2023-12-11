@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 
 public class ControlServlet extends HttpServlet {
@@ -101,6 +102,52 @@ public class ControlServlet extends HttpServlet {
                  System.out.println("The action is: update");
                  updateQuote(request, response);           	
                  break;
+        	 case "/bigClient":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: bigClient");
+                 bigClient(request, response,"");           	
+                 break;
+        	 case "/highestTreeCut":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: Highest Tree");
+                 highestTree(request, response,"");           	
+                 break;
+        	 case "/oneTree":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: One Tree Clients");
+                 oneTreeClients(request, response,"");           	
+                 break;
+        	 case "/badClients":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: Bad Clients");
+                 badClients(request, response,"");           	
+                 break;
+                 
+        	 case "/goodClients":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: good Clients");
+                 goodClients(request, response,"");           	
+                 break;
+        	 case "/stats":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is:  stats ");
+                 statsPage(request, response,"");           	
+                 break;
+        	 case "/prosp":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is:  prosp ");
+                 prosppage(request, response,"");           	
+                 break;
+        	 case "/easy":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is:  easy ");
+                 easyClient(request, response,"");           	
+                 break;
+        	 case "/overdue":
+        		 System.out.println("case BBBB");
+                 System.out.println("The action is: overdue ");
+                 overdue(request, response,"");           	
+                 break;
              default: 
             	 System.out.println("case 99999999999999999999	");
             	 break;
@@ -123,10 +170,253 @@ public class ControlServlet extends HttpServlet {
 	    	        
 	    private void rootPage(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException{
 	    	System.out.println("root view");
-	    	System.out.print("hello");
-			request.setAttribute("listUser", userDAO.listAllUsers());
+			request	.setAttribute("listUser", userDAO.listAllUsers());
 	    	request.getRequestDispatcher("rootView.jsp").forward(request, response);
+	    	
 	    }
+	    
+	    
+	    private void bigClient(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> bigClientQuotes = userDAO.bigClients();
+
+	        // Check if there are any quotes
+	        if (bigClientQuotes != null && !bigClientQuotes.isEmpty()) {
+	      
+	            for (quote q : bigClientQuotes) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : bigClientQuotes) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No big clients found.");
+	        }
+
+	        request.getRequestDispatcher("bigclient.jsp").forward(request, response);
+	    }
+	    private void prosppage(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> prospClient = userDAO.prospective();
+
+	        // Check if there are any quotes
+	        if (prospClient != null && !prospClient.isEmpty()) {
+	      
+	            for (quote q : prospClient) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : prospClient) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No big clients found.");
+	        }
+
+	        request.getRequestDispatcher("prospective.jsp").forward(request, response);
+	    }
+	    
+	    private void easyClient(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> easyClient = userDAO.easyClients();
+
+	        // Check if there are any quotes
+	        if (easyClient != null && !easyClient.isEmpty()) {
+	      
+	            for (quote q : easyClient) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : easyClient) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No big clients found.");
+	        }
+
+	        request.getRequestDispatcher("easyclient.jsp").forward(request, response);
+	    }
+	    
+	    private void overdue(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> overdueList = userDAO.overdueClients();
+
+	        // Check if there are any quotes
+	        if (overdueList != null && !overdueList.isEmpty()) {
+	      
+	            for (quote q : overdueList) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : overdueList) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No overdueList clients found.");
+	        }
+
+	        request.getRequestDispatcher("overdue.jsp").forward(request, response);
+	    }
+	    
+	    private void goodClients(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> goodClientsQuotes = userDAO.goodClients();
+
+	        // Check if there are any quotes
+	        if (goodClientsQuotes != null && !goodClientsQuotes.isEmpty()) {
+	      
+	            for (quote q : goodClientsQuotes) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : goodClientsQuotes) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No big clients found.");
+	        }
+
+	        request.getRequestDispatcher("goodclients.jsp").forward(request, response);
+	    }
+	    
+	    private void statsPage(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	       
+
+	        request.setAttribute("quoteInfoList", userDAO.listAllQuotes());
+	        request.setAttribute("total", userDAO.totalStatistics());
+	        request.setAttribute("average", userDAO.averageStatistics());
+	        request.getRequestDispatcher("stats.jsp").forward(request, response);
+	    }
+	    
+	    
+	    private void badClients(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> badClientsQuotes = userDAO.badClients();
+
+	        // Check if there are any quotes
+	        if (badClientsQuotes != null && !badClientsQuotes.isEmpty()) {
+	      
+	            for (quote q : badClientsQuotes) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : badClientsQuotes) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No bad clients found.");
+	        }
+
+	        request.getRequestDispatcher("badclients.jsp").forward(request, response);
+	    }
+	    
+	    private void oneTreeClients(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> oneTreeClientList = userDAO.oneTree();
+
+	        // Check if there are any quotes
+	        if (oneTreeClientList != null && !oneTreeClientList.isEmpty()) {
+	      
+	            for (quote q : oneTreeClientList) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : oneTreeClientList) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No 1 tree clients found.");
+	        }
+
+	        request.getRequestDispatcher("bigclient.jsp").forward(request, response);
+	    }
+	    
+	    private void highestTree(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException {
+	        List<quote> highestTreeQuote = userDAO.highestTreeCut();
+
+	        // Check if there are any quotes
+	        if (highestTreeQuote != null && !highestTreeQuote.isEmpty()) {
+	      
+	            for (quote q : highestTreeQuote) {
+	                System.out.println("Email: " + q.getEmail());
+	            }
+
+	            // Assuming you have a method to retrieve quote information based on the email
+	            // You may need to adjust this based on your actual implementation
+	            List<quote> quoteInfoList = new ArrayList<>();
+	            for (quote q : highestTreeQuote) {
+	            	quote quoteInfo = userDAO.quoteInfo(q.getEmail());
+	                if (quoteInfo != null) {
+	                    quoteInfoList.add(quoteInfo);
+	                }
+	            }
+
+	            // Send the list of quote information to the front end
+	            request.setAttribute("quoteInfoList", quoteInfoList);
+	        } else {
+	            System.out.println("No big clients found.");
+	        }
+
+	        request.getRequestDispatcher("highesttree.jsp").forward(request, response);
+	    }
+
 	    
 	    
 	    private void adminPage(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException{
@@ -196,12 +486,7 @@ public class ControlServlet extends HttpServlet {
 	           
 	    private void newQuote(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 	    	
-	    	System.out.println(request.getParameter("clientName"));
-	   	 	System.out.println(request.getParameter("treePrice"));
-		   	System.out.println(request.getParameter("treeHeight"));
-		   	System.out.println(request.getParameter("quoteDate"));
-		   	System.out.println(request.getParameter("quoteResponse"));
-		   	
+	   
 		   	String quoteDateStr = request.getParameter("quoteDate");
 		   	Date newQuoteDate = null;
 
@@ -265,7 +550,7 @@ public class ControlServlet extends HttpServlet {
 	            System.out.println("Email: " + q.getEmail());
 	            System.out.println("Tree Price: " + q.getTreePrice());
 	            System.out.println("Tree Size: " + q.getTreeSize());
-	            System.out.println("Tree Height: " + q.getTreeHeight());
+	            System.out.println("Tree Number: " + q.getTreeHeight());
 	            System.out.println("Quote Date: " + q.getQuoteDate());
 	            System.out.println("Quote Response: " + q.getQuoteResponse());
 	            System.out.println(); // Add a separator between quotes

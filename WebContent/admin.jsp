@@ -26,7 +26,7 @@
         <th>User</th>
         <th>Tree Price</th>
         <th>Tree Size</th>
-        <th>Tree Height</th>
+        <th>Tree Number</th>
         <th>Quote Date</th>
         <th>Quote Response</th>
     </tr>

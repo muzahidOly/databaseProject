@@ -18,8 +18,13 @@ We spent 30 hr on the second part of the project
 Mizanul Haque aspent 8-9 hours indiviudally
 Muzahid spent 10-12 hours individually
 
+Part 3-
+Muzahid Oly- Worked on connecting the new features, front end and back end, as well as the statistics, good client, bad client, overdue client and other features. Along with this, he worked on implementing the different functionalities, as well as other features
 
-
+Mizanul Haque- Mizanul wokred on implmenting the feature to show Prospective Clients, one tree quotes, easy clients, big clients, and other features alongside Muzahid. He also worked on getting the results from the database to display on the front end.
+We spent 50 hours together on this project for part 3
+Mizanul spent 10-15 hours indiviudally
+Muzahid spent 15-18 hours on this project
 
 
 ## Instructions to Operate
